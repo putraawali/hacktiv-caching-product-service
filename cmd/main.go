@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"product-service/config"
 	"product-service/internal/infrastructure/http"
+	"time"
+
+	"github.com/gin-contrib/cache/persistence"
 
 	"github.com/joho/godotenv"
 )
@@ -16,12 +18,10 @@ func main() {
 		log.Fatalf("Error load .env file")
 	}
 
-	db, err := config.InitDB()
-	if err != nil {
-		log.Fatalf(err.Error())
-	}
+	// Inisialisasi cache store dengan expiration time
+	store := persistence.NewInMemoryStore(time.Second * 20)
 
-	r := http.SetupRoute(db)
+	r := http.SetupRoute(store)
 
 	port := os.Getenv("PRODUCT_SERVICE_PORT")
 
